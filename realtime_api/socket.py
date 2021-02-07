@@ -6,11 +6,10 @@ from collections import defaultdict
 
 repetition_accuracy = 1.0
 
-
 class OGSCommSocket:
     handlers = defaultdict(list)
     repeated_tasks = set()
-    comm_socket = socketio.Client(reconnection_delay_max=60, logger=False, engineio_logger=False)
+    comm_socket = socketio.Client(reconnection_delay_max=60, logger=True, engineio_logger=False)
     clock_drift = 0.0
     clock_latency = 0.0
     last_ping = 0
@@ -42,8 +41,6 @@ class OGSCommSocket:
             self.comm_socket.on(key, handler=_handler)
         if handler not in self.handlers.values():
             self.handlers[key].append(handler)
-            if key == "connect" and self.comm_socket.connected:
-                handler()
 
     def remove_handler(self, key, handler):
         self.handlers[key].remove(handler)
@@ -106,6 +103,4 @@ class OGSCommSocket:
     def __del__(self):
         self.exit()
 
-
 comm_socket = OGSCommSocket()
-comm_socket.connect()
