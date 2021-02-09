@@ -1,3 +1,5 @@
+import time
+
 from ogs_api.realtime_api.socket import comm_socket
 
 """
@@ -25,3 +27,30 @@ comm_socket.on("connect", _chat_connect)
 def chat_join(channel: str):
     comm_socket.emit("chat/join", data={"channel": channel})
 
+def chat_part(channel: str):
+    comm_socket.emit("chat/part", data={"channel": channel})
+
+def chat_send(channel: str, user_id: int, message: str):
+    comm_socket.emit("chat/send", data={
+        'channel': channel,
+        'uuid': _n2s(int(time.time() * 1000)),
+        'message': message,
+    })
+
+_n2s_alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+_n2s_alphalen = len(_n2s_alphabet)
+
+def _n2s(n: int) -> str:
+    if n < 0:
+        return '-' + str(_n2s(-n))
+
+    if n == 0:
+        return _n2s_alphabet[0]
+
+    ret = ''
+    while n:
+        rem = n % _n2s_alphalen
+        n = n // _n2s_alphalen
+        ret = _n2s_alphabet[rem] + ret
+
+    return ret
