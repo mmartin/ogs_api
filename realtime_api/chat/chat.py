@@ -10,10 +10,13 @@ possible chat events emitted by the server are:
  -  "chat-part": 
 """
 
+_user_id: int = None
 
 def _chat_connect():
     from ogs_api.access_tokens import get_data, get_chat_auth
     data = get_data()
+    global _user_id
+    _user_id = data['user']['id']
     comm_socket.emit("chat/connect", data={"auth": get_chat_auth(),
                                            "player_id": data["user"]["id"],
                                            "ranking": data["user"]["ranking"],
@@ -30,10 +33,10 @@ def chat_join(channel: str):
 def chat_part(channel: str):
     comm_socket.emit("chat/part", data={"channel": channel})
 
-def chat_send(channel: str, user_id: int, message: str):
+def chat_send(channel: str, message: str):
     comm_socket.emit("chat/send", data={
         'channel': channel,
-        'uuid': _n2s(int(time.time() * 1000)),
+        'uuid': _n2s(_user_id) + '.' + _n2s(int(time.time() * 1000)),
         'message': message,
     })
 
