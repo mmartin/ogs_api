@@ -88,12 +88,20 @@ def get_oauth_token(username=None,
                 client_id = ask_for_input('client_id')
             if client_secret is None:
                 client_secret = ask_for_input('client_secret')
-            req = requests.post('https://online-go.com/oauth2/token/',
-                                data={'username': username,
-                                      'password': password,
-                                      'client_id': client_id,
-                                      'client_secret': client_secret,
-                                      'grant_type': 'password'})
+            if beta:
+                req = requests.post('https://beta.online-go.com/oauth2/token/',
+                                    data={'username': username,
+                                          'password': password,
+                                          'client_id': client_id,
+                                          'client_secret': client_secret,
+                                          'grant_type': 'password'})
+            else:
+                req = requests.post('https://online-go.com/oauth2/token/',
+                                    data={'username': username,
+                                          'password': password,
+                                          'client_id': client_id,
+                                          'client_secret': client_secret,
+                                          'grant_type': 'password'})
             new_token = req.json()
         try:
             token = {'access_token': new_token['access_token'],
