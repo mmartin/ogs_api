@@ -79,7 +79,6 @@ class OGSCommSocket:
                                             "player_id": data["user"]["id"],
                                             "username": data["user"]["username"],
                                             "jwt": get_user_jwt()})
-            self.start_repeated_background_task(self.ping, 10.0)
         self.on("connect", handler=authenticate)
 
         def handle_pong(msg):
@@ -91,6 +90,8 @@ class OGSCommSocket:
             self.clock_drift = drift / 1000
             self.last_ping = now / 1000
         self.on("net/pong", handler=handle_pong)
+
+        self.start_repeated_background_task(self.ping, 10.0)
 
         def on_HUP():
             """reload"""
